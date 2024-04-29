@@ -1,4 +1,4 @@
-package udp_server
+package live_server
 
 import (
 	"fmt"
