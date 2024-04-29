@@ -32,6 +32,8 @@ func main() {
 
 	reader := bufio.NewReader(conn)
 
+	fmt.Println("receiving data from server...")
+
 	for {
 		var buf [BufSize]byte
 		_, err := reader.Read(buf[:])
@@ -39,7 +41,6 @@ func main() {
 			fmt.Println("cannot read from server")
 			panic(err)
 		}
-		fmt.Println("recieved the message form the server!")
 		fmt.Println(string(buf[:]))
 	}
 }
