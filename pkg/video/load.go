@@ -4,6 +4,6 @@ import (
 	"bytes"
 )
 
-func Load() *Reader {
-	return NewReader(bytes.NewReader([]byte("Hello world")), 1000)
+func Load(filename string) *Reader {
+	return NewReader(bytes.NewReader([]byte(filename)), 1000)
 }

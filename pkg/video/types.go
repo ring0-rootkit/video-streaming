@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	BufSize int32 = 512
+	BufSize int32 = 1
 )
 
 var Log *logging.Log = logging.New("[video]")
 
 type Reader struct {
-	r      *bytes.Reader
+	reader *bytes.Reader
 	curBuf [BufSize]byte
 
 	// seconds per packet
@@ -23,7 +23,7 @@ type Reader struct {
 
 // mspp - milliseconds per packet
 func NewReader(r *bytes.Reader, mspp int64) *Reader {
-	return &Reader{r: r, mspp: mspp}
+	return &Reader{reader: r, mspp: mspp}
 }
 
 // reads 'video.BufSize' bytes to buf, if len(buf) less than video.BufSize

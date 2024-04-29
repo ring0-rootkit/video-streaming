@@ -1,6 +1,7 @@
 package logging
 
 import (
+	_ "github.com/joho/godotenv/autoload"
 	"log"
 	"os"
 	"strings"
