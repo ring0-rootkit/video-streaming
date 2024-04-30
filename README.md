@@ -1,3 +1,5 @@
+![go workflow](https://github.com/ring0-rootkit/video-streaming-in-go/actions/workflows/go.yml/badge.svg)
+
 live server and vod server
 
 live server is broadcast to everyone - for optimisation
