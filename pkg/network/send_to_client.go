@@ -9,11 +9,11 @@ import (
 
 // send 'r' to every peer in 'peers'
 func Broadcast(peers []*types.SRTClient, r *live.ReadWriter) error {
-	var buf [live.BufSize]byte
-	_, err := r.Read(buf[:])
+	buf := make([]byte, live.BufferSize)
+	n, err := r.Read(buf)
 	if err == nil {
 		for _, peer := range peers {
-			peer.Socket.Write(buf[:])
+			peer.Socket.Write(buf[:n])
 		}
 		return nil
 	}

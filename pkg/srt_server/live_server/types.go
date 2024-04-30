@@ -13,6 +13,7 @@ import (
 
 const (
 	ClientConnBufSize int = 512
+	PacketsInHeader   int = 1024
 )
 
 var allowedStreamIDs = map[string]bool{
@@ -26,7 +27,9 @@ type SRTServer struct {
 	port       uint16
 	isRunning  bool
 
-	streamer *types.SRTClient
+	streamer          *types.SRTClient
+	isStreamHeaderSet bool
+	streamHeader      [][]byte
 
 	peers []*types.SRTClient
 
@@ -45,11 +48,13 @@ func New(port uint16) *SRTServer {
 	sck := srtgo.NewSrtSocket("localhost", port, options)
 
 	srv := &SRTServer{
-		sck:       sck,
-		port:      port,
-		isRunning: false,
-		peers:     make([]*types.SRTClient, 0),
-		log:       log,
+		sck:               sck,
+		port:              port,
+		isRunning:         false,
+		isStreamHeaderSet: false,
+		peers:             make([]*types.SRTClient, 0),
+		log:               log,
+		streamHeader:      make([][]byte, 0),
 	}
 
 	srv.sck.SetListenCallback(srv.listenCallback)
@@ -110,21 +115,41 @@ func (s *SRTServer) startListener() {
 		}
 		s.log.Info("new client connected!")
 		defer socket.Close()
+
 		if s.streamer != nil && addr.AddrPort() == s.streamer.ClientAddr.AddrPort() && addr.IP.Equal(s.streamer.ClientAddr.IP) {
 			s.log.Info("streamer  connected")
+			s.sendStreamHeaderToPeers()
 			s.streamer.Socket = socket
 			s.streamer.Connected = true
 		} else {
-			s.peers = append(s.peers, &types.SRTClient{Socket: socket, ClientAddr: addr})
+			s.peers = append(s.peers, &types.SRTClient{Socket: socket, ClientAddr: addr, Connected: true})
+			s.log.Info("peer added to list")
 		}
 	}
 }
 
 func (s *SRTServer) startBroadcaster() {
 	for s.isRunning {
+		s.sendStreamHeaderToPeers()
 		err := network.Broadcast(s.peers, s.readWriter)
 		if err != nil {
 			break
 		}
+	}
+}
+
+func (s *SRTServer) sendStreamHeaderToPeers() {
+	for _, peer := range s.peers {
+		if peer.HasStreamHeader {
+			continue
+		}
+		s.sendStreamHeader(peer.Socket)
+		peer.HasStreamHeader = true
+	}
+}
+
+func (s *SRTServer) sendStreamHeader(socket *srtgo.SrtSocket) {
+	for _, packet := range s.streamHeader {
+		_, _ = socket.Write(packet)
 	}
 }

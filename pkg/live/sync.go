@@ -12,7 +12,7 @@ import (
 // 	go func() {
 // 		for {
 // 			var buf [BufSize]byte
-// 			_, err := r.Read(buf[:])
+// 			_, err := r.Read(buf)
 // 			if err != nil {
 // 				ch <- false
 // 				if err.Error() == "EOF" {
@@ -21,7 +21,7 @@ import (
 // 				// TODO error handling
 // 				panic(err)
 // 			}
-// 			copy(r.curBuf[:], buf[:])
+// 			copy(r.curBuf, buf)
 // 			ch <- true
 // 			time.Sleep(time.Millisecond * time.Duration(r.MillisecondsPerPack()))
 // 			continue

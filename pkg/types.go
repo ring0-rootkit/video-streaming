@@ -10,5 +10,6 @@ type SRTClient struct {
 	Socket     *srtgo.SrtSocket
 	ClientAddr *net.UDPAddr
 
-	Connected bool
+	HasStreamHeader bool
+	Connected       bool
 }

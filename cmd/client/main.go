@@ -30,12 +30,12 @@ func main() {
 		panic(err)
 	}
 	for {
-		var buf [BufSize]byte
-		_, err := reader.Read(buf[:])
+		buf := make([]byte, BufSize)
+		n, err := reader.Read(buf)
 		if err != nil {
 			fmt.Println("cannot read from server")
 			panic(err)
 		}
-		file.Write(buf[:])
+		file.Write(buf[:n])
 	}
 }
