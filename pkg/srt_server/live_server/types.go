@@ -13,7 +13,7 @@ import (
 
 const (
 	ClientConnBufSize int = 512
-	PacketsInHeader   int = 1024
+	PacketsInHeader   int = 20480
 )
 
 var allowedStreamIDs = map[string]bool{

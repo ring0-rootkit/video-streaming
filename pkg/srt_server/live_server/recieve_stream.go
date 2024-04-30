@@ -14,19 +14,18 @@ func (s *SRTServer) recieveStream() {
 	s.recieveStreamHeader()
 	for s.isRunning {
 		buf := make([]byte, live.BufferSize)
-		_, err := s.streamer.Socket.Read(buf)
+		n, err := s.streamer.Socket.Read(buf)
 		if err != nil {
 			s.log.Error(err.Error())
 			s.Close()
 			return
 		}
-		_, err = s.readWriter.Write(buf[:])
+		_, err = s.readWriter.Write(buf[:n])
 		if err != nil {
 			s.log.Error(err.Error())
 			s.Close()
 			return
 		}
-		// s.log.Info(fmt.Sprintf("streamer sent %d bytes of data", n))
 	}
 	s.log.Info("stream ended, streamer is disconected")
 }
