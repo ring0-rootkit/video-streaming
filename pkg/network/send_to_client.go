@@ -13,12 +13,6 @@ func Broadcast(peers []*types.SRTClient, r *live.ReadWriter) error {
 	n, err := r.Read(buf)
 	if err == nil {
 		for _, peer := range peers {
-			stat, _ := peer.Socket.Stats()
-			Log.Info(fmt.Sprintf("bandwitdh:%f, dropped-packets:%d, byte-loss:%d",
-				stat.MbpsBandwidth,
-				stat.PktSndDrop,
-				stat.ByteRcvLossTotal))
-
 			peer.Socket.Write(buf[:n])
 		}
 		return nil
