@@ -3,26 +3,32 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
 
 	"github.com/haivision/srtgo"
 )
 
 const (
-	BufSize int32 = 512
+	BufSize int32 = 1316
 )
 
 func main() {
 	options := make(map[string]string)
-	options["streamid"] = "foo"
 	sck := srtgo.NewSrtSocket("localhost", 42069, options)
-	err := sck.Connect()
-	if err != nil {
-		panic(err)
+	for {
+		err := sck.Connect()
+		if err != nil {
+			continue
+		}
+		break
 	}
 	reader := bufio.NewReader(sck)
 
 	fmt.Println("receiving data from server...")
-
+	file, err := os.OpenFile("sample_videos/recieved.h264", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
 	for {
 		var buf [BufSize]byte
 		_, err := reader.Read(buf[:])
@@ -30,6 +36,6 @@ func main() {
 			fmt.Println("cannot read from server")
 			panic(err)
 		}
-		fmt.Println(string(buf[:]))
+		file.Write(buf[:])
 	}
 }

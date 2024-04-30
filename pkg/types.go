@@ -6,7 +6,9 @@ import (
 	"github.com/haivision/srtgo"
 )
 
-type SRTPeer struct {
-	Socket   *srtgo.SrtSocket
-	PeerAddr *net.UDPAddr
+type SRTClient struct {
+	Socket     *srtgo.SrtSocket
+	ClientAddr *net.UDPAddr
+
+	Connected bool
 }
