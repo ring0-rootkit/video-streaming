@@ -45,19 +45,19 @@ func New(prefix string) *Log {
 }
 
 func (l *Log) Error(msg string) {
-	if logLevel >= 3 {
+	if logLevel <= 3 {
 		l.logger.Print("[ERROR]", msg)
 	}
 }
 
 func (l *Log) Warn(msg string) {
-	if logLevel >= 2 {
+	if logLevel <= 2 {
 		l.logger.Print("[WARN]", msg)
 	}
 }
 
 func (l *Log) Info(msg string) {
-	if logLevel >= 1 {
+	if logLevel <= 1 {
 		l.logger.Print("[INFO]", msg)
 	}
 }
