@@ -1,14 +1,5 @@
 package network
 
-import (
-	"net"
+import "github.com/ring0-rootkit/video-streaming-in-go/pkg/logging"
 
-	"github.com/ring0-rootkit/video-streaming-in-go/pkg/logging"
-)
-
-var Log logging.Log = *logging.New("[network]")
-
-type Conn struct {
-	UDPCon  *net.UDPConn
-	UDPAddr *net.UDPAddr
-}
+var Log *logging.Log = logging.New("[network]")

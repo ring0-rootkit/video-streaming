@@ -3,7 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"net"
+
+	"github.com/haivision/srtgo"
 )
 
 const (
@@ -11,26 +12,14 @@ const (
 )
 
 func main() {
-	servAddp, err := net.ResolveUDPAddr("udp", "localhost:42069")
+	options := make(map[string]string)
+	options["streamid"] = "foo"
+	sck := srtgo.NewSrtSocket("localhost", 42069, options)
+	err := sck.Connect()
 	if err != nil {
-		fmt.Println("cannot resolve serv addr")
 		panic(err)
 	}
-	conn, err := net.DialUDP("udp", nil, servAddp)
-	if err != nil {
-		fmt.Println("cannot connect to the server")
-		panic(err)
-	}
-
-	fmt.Println("connected to server, listening...")
-
-	_, err = conn.Write([]byte("i wanna connect"))
-	if err != nil {
-		fmt.Println("cannot write to server")
-		panic(err)
-	}
-
-	reader := bufio.NewReader(conn)
+	reader := bufio.NewReader(sck)
 
 	fmt.Println("receiving data from server...")
 
