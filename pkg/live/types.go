@@ -1,9 +1,9 @@
 package live
 
-// ffmpeg -re -analyzeduration 60M -vf setpts='PTS-STARTPTS' -i srt://localhost:42069 -c:v copy -c:a copy sample_videos/output.mp4
+// ffmpeg -re -i srt://localhost:42069 -c:v h264 -c:a copy -vf setpts='PTS-STARTPTS'  sample_videos/output.mp4
 import (
 	"errors"
-	"slices"
+	// "slices"
 	"sync"
 
 	"github.com/ring0-rootkit/video-streaming-in-go/pkg/logging"
@@ -52,33 +52,42 @@ func (vr *ReadWriter) Read(buf []byte) (int, error) {
 	if len(buf) < int(BufSize) {
 		return -1, errors.New("len(buf) should be equal or more than video.BufSize")
 	}
-	vr.rwMut.RLock()
-	defer vr.rwMut.RUnlock()
+	// vr.rwMut.RLock()
+	// defer vr.rwMut.RUnlock()
 	n := copy(buf, vr.curBuf[:])
 	return n, nil
 }
 
+// func (vr *ReadWriter) Write(buf []byte) (int, error) {
+// 	// set flag so everyone knows that streamer is trying to write
+// 	if vr.currCached < MaxCached {
+// 		var tmp [BufSize]byte
+// 		n := copy(tmp[:], buf)
+// 		vr.cache = append(vr.cache, VideoChunk{chunk: tmp, id: vr.lastId})
+// 		vr.lastId++
+// 		vr.currCached++
+// 		return n, nil
+// 	}
+//
+// 	vr.rwMut.Lock()
+// 	n := copy(vr.curBuf[:], vr.cache[0].chunk[:])
+// 	vr.rwMut.Unlock()
+// 	vr.HasNextCh <- true
+//
+// 	vr.cache = slices.Delete(vr.cache, 0, 1)
+// 	var tmp [BufSize]byte
+// 	copy(tmp[:], buf)
+// 	vr.cache = append(vr.cache, VideoChunk{chunk: tmp, id: vr.lastId})
+// 	vr.lastId++
+// 	return n, nil
+// }
+
 func (vr *ReadWriter) Write(buf []byte) (int, error) {
 	// set flag so everyone knows that streamer is trying to write
-	if vr.currCached < MaxCached {
-		var tmp [BufSize]byte
-		n := copy(tmp[:], buf)
-		vr.cache = append(vr.cache, VideoChunk{chunk: tmp, id: vr.lastId})
-		vr.lastId++
-		vr.currCached++
-		return n, nil
-	}
-
-	vr.rwMut.Lock()
-	n := copy(vr.curBuf[:], vr.cache[0].chunk[:])
-	vr.rwMut.Unlock()
+	// vr.rwMut.Lock()
+	n := copy(vr.curBuf[:], buf)
+	// vr.rwMut.Unlock()
 	vr.HasNextCh <- true
-
-	vr.cache = slices.Delete(vr.cache, 0, 1)
-	var tmp [BufSize]byte
-	copy(tmp[:], buf)
-	vr.cache = append(vr.cache, VideoChunk{chunk: tmp, id: vr.lastId})
-	vr.lastId++
 	return n, nil
 }
 
